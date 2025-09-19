@@ -1,4 +1,4 @@
-# CS 188 - Project 3: Reinforcement Learning
+# Reinforcement Learning
 
 ## Introduction
 
