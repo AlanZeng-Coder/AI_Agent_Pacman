@@ -1,103 +1,105 @@
-CS 188 Project 3: Reinforcement Learning
-Project Overview
-This project explores the core concepts of Markov Decision Processes (MDPs) and Reinforcement Learning (RL) by implementing RL algorithms for agents in two environments: Gridworld and Pac-Man.
+# CS 188 - Project 3: Reinforcement Learning
 
-The primary goal is to build agents that can learn optimal policies in unknown environments through interaction. The project implements and analyzes two fundamental reinforcement learning algorithms:
+## 简介
 
-Value Iteration: A model-based dynamic programming algorithm used to find the optimal value function and policy for a known MDP.
+本项目旨在实现并应用强化学习中的两种核心算法：**价值迭代 (Value Iteration)** 和 **Q学习 (Q-Learning)**。通过在一个马尔可夫决策过程 (MDP) 环境中训练智能体 (Agent)，我们能够找到最优策略，使其在不确定的世界中做出最佳决策。
 
-Q-Learning: A model-free temporal-difference learning algorithm that learns the optimal action-value function (Q-function) directly from experience, without needing a model of the environment.
+智能体将在三个不同的环境中进行测试：
+1.  **Gridworld**: 一个经典的网格世界，用于验证和调试价值迭代算法。
+2.  **Crawler**: 一个模拟的机器人，它需要学习如何向前移动。
+3.  **Pacman**: 我们的老朋友吃豆人，它将利用Q学习来学习如何在躲避鬼魂的同时吃掉所有的豆子，而无需预先了解游戏规则。
 
-These algorithms are first tested in a simple Gridworld and then applied to control a simulated Crawler robot and, finally, the Pac-Man agent.
+本项目主要修改的文件是 `valueIterationAgents.py` 和 `qlearningAgents.py`。
 
-File Structure
-valueIterationAgents.py: Contains the implementation of the Value Iteration agent, which solves for the optimal policy assuming the MDP's dynamics (transitions and rewards) are known.
+---
 
-qlearningAgents.py: Implements the Q-Learning agent and the Approximate Q-Learning agent. These agents learn from the outcomes of their actions ((state, action, nextState, reward) tuples) to operate in environments where the transition and reward models are unknown.
+## 安装与环境
 
-analysis.py: Includes written answers to analytical questions about the behavior of the agents and the impact of various parameters (e.g., discount factor, learning rate, exploration rate).
+本项目基于 Python 3.x 开发。开始之前，请确保你已经安装了所有必要的依赖。通常情况下，项目本身不依赖于外部库，可以直接运行。
 
-gridworld.py: The Gridworld environment simulator.
+-   **Python**: 3.6 或更高版本
+-   **Tkinter**: 用于图形化界面展示。大多数Python发行版已自带。如果缺失，请根据你的操作系统进行安装（例如，在Ubuntu上使用 `sudo apt-get install python3-tk`）。
 
-featureExtractors.py: Provides functions to extract features from a game state, used by the Approximate Q-Learning agent.
+使用方法与指令
+你可以通过命令行运行不同的模块来测试和展示你实现的算法。以下是本项目中常用的一些命令。
 
-How to Run the Code
-Gridworld Examples
-Q1: Value Iteration
-Run value iteration for 100 iterations on the default Gridworld.
+1. 价值迭代 (Value Iteration)
+价值迭代算法在 valueIterationAgents.py 中实现。你可以使用 gridworld.py 来可视化智能体通过价值迭代计算出的策略。
 
-Bash
+运行默认的Gridworld
+运行价值迭代智能体，默认进行100次迭代。
+
+```bash
 
 python gridworld.py -a value -i 100
--a value: Use the ValueIterationAgent.
+```
+-a value: 指定使用价值迭代智能体。
 
--i 100: Perform 100 iterations of value updates.
+-i 100: 设置迭代次数为100。
 
-Q4 & Q5: Q-Learning
-Train a Q-Learning agent for 50 episodes in the Gridworld.
+你可以看到每个网格的状态价值以及最终学到的策略（以箭头形式表示）。
 
-Bash
+修改参数运行
+可以修改迭代次数、噪声和折扣因子等参数来观察策略的变化。
 
-python gridworld.py -a q -k 50 -n 0 -g 0.9 -e 0.1
--a q: Use the QLearningAgent.
+改变迭代次数:
 
--k 50: Run for 50 training episodes.
+```Bash
 
--g 0.9: Set the discount factor γ to 0.9.
+python gridworld.py -a value -i 5
+```
+（只进行5次迭代，价值尚未完全收敛）
 
--e 0.1: Set the exploration rate ε to 0.1.
+改变噪声 (Noise):
 
-Crawler Robot
-Run the crawler robot simulation to have it learn to walk.
+```Bash
 
-Bash
+python gridworld.py -a value -i 100 -n 0.0
+```
+（-n 0.0 表示没有噪声，行动结果是确定的）
+
+改变生存奖励 (Living Reward):
+
+```Bash
+
+python gridworld.py -a value -i 100 -r -0.1
+```
+（-r -0.1 表示每走一步都有一个小的负奖励，鼓励智能体尽快到达终点）
+
+2. Q学习 (Q-Learning)
+Q学习算法在 qlearningAgents.py 中实现。我们主要在 Pacman 环境下测试该算法。
+
+训练Pacman Q-Learning智能体
+在 smallGrid 地图上训练 PacmanQAgent 2000轮游戏，并观看最后10轮的表现。
+
+```Bash
+
+python pacman.py -p PacmanQAgent -x 2000 -n 2010 -l smallGrid
+```
+-p PacmanQAgent: 指定使用Q学习吃豆人智能体。
+
+-x 2000: 设置训练轮次 (number of training episodes)。
+
+-n 2010: 设置总共运行的游戏轮次。训练将在前2000轮进行，最后10轮将关闭学习（探索率epsilon为0），只展示学习到的策略。
+
+-l smallGrid: 指定使用的地图布局。
+
+训练近似Q学习智能体 (Approximate Q-Learning)
+对于更复杂的地图（如 mediumGrid），状态空间太大，无法使用传统的Q表。此时需要使用近似Q学习，通过特征来估计Q值。
+
+```Bash
+
+python pacman.py -p ApproximateQAgent -a extractor=SimpleExtractor -x 50 -n 60 -l mediumClassic
+```
+-p ApproximateQAgent: 指定使用近似Q学习智能体。
+
+-a extractor=SimpleExtractor: 指定用于提取状态特征的函数。SimpleExtractor 是一个预先提供的基本特征提取器。
+
+3. Crawler 机器人
+你也可以在 crawler.py 上测试你的Q学习算法，训练一个两足机器人学习如何行走。
+
+```Bash
 
 python crawler.py
-Pac-Man
-Q6: Q-Learning Pac-Man
-Train a PacmanQAgent. Training is done with the display turned off by default for speed.
-
-Bash
-
-# Train the agent on the smallGrid for 2000 episodes
-python pacman.py -p PacmanQAgent -x 2000 -n 2010 -l smallGrid
-
-# Watch the trained agent play 10 games
-python pacman.py -p PacmanQAgent -n 10 -l smallGrid -a numTraining=2000
--p PacmanQAgent: Use the Q-Learning Pac-Man agent.
-
--x 2000: Specify 2000 training episodes.
-
--l smallGrid: Use the smallGrid layout.
-
-Q7: Approximate Q-Learning Pac-Man
-For larger, more complex layouts, standard Q-Learning is infeasible due to the massive state space. Here, we use an agent that learns weights for features instead of Q-values for states.
-
-Bash
-
-# Train the approximate agent on the mediumClassic layout for 50 episodes
-python pacman.py -p ApproximateQAgent -a extractor=SimpleExtractor -x 50 -n 60 -l mediumClassic
-
-# Watch the trained approximate agent play
-python pacman.py -p ApproximateQAgent -a extractor=SimpleExtractor -n 10 -l mediumClassic
--p ApproximateQAgent: Use the feature-based Q-Learning agent.
-
--a extractor=SimpleExtractor: Specify the feature extractor to use.
-
-Summary of Implemented Concepts
-Q1: Value Iteration
-In valueIterationAgents.py, the agent computes the optimal value V*(s) for each state by iteratively applying the Bellman update until convergence. The optimal policy π*(s) is then extracted from these values.
-
-Q2 & Q3: Analysis
-These questions, answered in analysis.py, explore the theoretical aspects of MDPs. By adjusting parameters like the living reward and discount factor, we can design policies that exhibit specific behaviors (e.g., preferring a distant but larger reward while avoiding risks), demonstrating a deep understanding of the trade-offs in reinforcement learning.
-
-Q4 & Q5: Q-Learning
-The QLearningAgent was implemented in qlearningAgents.py. This agent learns a Q-table from scratch through trial and error. Key methods implemented include update, computeActionFromQValues, and getAction. An epsilon-greedy strategy is used to balance exploration (trying random actions) and exploitation (choosing the best-known action).
-
-Q6: Pac-Man Q-Agent
-The standard Q-Learning algorithm was applied to Pac-Man. The state representation was carefully defined to make learning feasible. After thousands of training games, the agent learns an effective policy for eating dots and avoiding ghosts without any prior knowledge of the game's rules.
-
-Q7: Approximate Q-Learning
-To handle the enormous state space of larger Pac-Man maps, we implemented an ApproximateQAgent. This agent uses a linear function to approximate the Q-value:
-Q(s, a) = w₁f₁(s, a) + w₂f₂(s, a) + ...
-Instead of learning a table of Q-values, the agent learns a weight vector w for a set of features (e.g., distance to the nearest food, presence of nearby ghosts). This allows the agent to generalize its knowledge to states it has never seen before, enabling it to perform well on complex layouts.
+```
+这个脚本会打开一个图形界面，并自动开始训练过程。你可以实时观察到机器人学习行走的过程以及奖励的变化。
