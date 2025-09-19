@@ -1,105 +1,139 @@
 # CS 188 - Project 3: Reinforcement Learning
 
-## 简介
+## Introduction
 
-本项目旨在实现并应用强化学习中的两种核心算法：**价值迭代 (Value Iteration)** 和 **Q学习 (Q-Learning)**。通过在一个马尔可夫决策过程 (MDP) 环境中训练智能体 (Agent)，我们能够找到最优策略，使其在不确定的世界中做出最佳决策。
+This project implements and applies two core reinforcement learning algorithms: **Value Iteration** and **Q-Learning**. By training an agent in a Markov Decision Process (MDP) environment, we can find an optimal policy that allows the agent to make the best decisions in a world of uncertainty.
 
-智能体将在三个不同的环境中进行测试：
-1.  **Gridworld**: 一个经典的网格世界，用于验证和调试价值迭代算法。
-2.  **Crawler**: 一个模拟的机器人，它需要学习如何向前移动。
-3.  **Pacman**: 我们的老朋友吃豆人，它将利用Q学习来学习如何在躲避鬼魂的同时吃掉所有的豆子，而无需预先了解游戏规则。
+The agent is tested in three distinct environments:
+1.  **Gridworld**: A classic grid-based world used to validate and debug the Value Iteration algorithm.
+2.  **Crawler**: A simulated robot that must learn how to move forward.
+3.  **Pacman**: Our old friend Pacman, who will use Q-Learning to learn how to eat all the dots while avoiding ghosts, without any prior knowledge of the game's rules.
 
-本项目主要修改的文件是 `valueIterationAgents.py` 和 `qlearningAgents.py`。
+The primary files modified for this project are `valueIterationAgents.py` and `qlearningAgents.py`.
 
 ---
 
-## 安装与环境
+## Setup and Environment
 
-本项目基于 Python 3.x 开发。开始之前，请确保你已经安装了所有必要的依赖。通常情况下，项目本身不依赖于外部库，可以直接运行。
+This project is developed in Python 3.x. Before you begin, please ensure you have all necessary dependencies installed. The project generally does not rely on external libraries and can be run directly.
 
--   **Python**: 3.6 或更高版本
--   **Tkinter**: 用于图形化界面展示。大多数Python发行版已自带。如果缺失，请根据你的操作系统进行安装（例如，在Ubuntu上使用 `sudo apt-get install python3-tk`）。
+-   **Python**: Version 3.6 or higher.
+-   **Tkinter**: Used for the graphical user interface. Most Python distributions include it by default. If it is missing, please install it according to your operating system (e.g., on Ubuntu, use `sudo apt-get install python3-tk`).
 
-使用方法与指令
-你可以通过命令行运行不同的模块来测试和展示你实现的算法。以下是本项目中常用的一些命令。
+### Getting the Project Files
 
-1. 价值迭代 (Value Iteration)
-价值迭代算法在 valueIterationAgents.py 中实现。你可以使用 gridworld.py 来可视化智能体通过价值迭代计算出的策略。
-
-运行默认的Gridworld
-运行价值迭代智能体，默认进行100次迭代。
+First, obtain the project code by cloning the repository or downloading the zip file.
 
 ```bash
+git clone <your-repository-link>
+cd <repository-name>
+```
+Usage and Commands
+You can run the different modules from the command line to test and demonstrate your implemented algorithms. Below are some of the common commands used in this project.
+
+1. Value Iteration
+The Value Iteration algorithm is implemented in valueIterationAgents.py. You can use gridworld.py to visualize the policy computed by the agent.
+
+Running the Default Gridworld
+Run the value iteration agent for 100 iterations by default.
+
+```Bash
 
 python gridworld.py -a value -i 100
 ```
--a value: 指定使用价值迭代智能体。
+-a value: Specifies the value iteration agent.
 
--i 100: 设置迭代次数为100。
+-i 100: Sets the number of iterations to 100.
 
-你可以看到每个网格的状态价值以及最终学到的策略（以箭头形式表示）。
+You will see the value of each state in the grid and the final learned policy (represented by arrows).
 
-修改参数运行
-可以修改迭代次数、噪声和折扣因子等参数来观察策略的变化。
+Running with Modified Parameters
+You can change parameters like the number of iterations, noise, and discount factor to observe how the policy changes.
 
-改变迭代次数:
+Change iterations:
 
 ```Bash
 
 python gridworld.py -a value -i 5
 ```
-（只进行5次迭代，价值尚未完全收敛）
+(With only 5 iterations, the values will not have fully converged.)
 
-改变噪声 (Noise):
+Change noise:
 
 ```Bash
 
 python gridworld.py -a value -i 100 -n 0.0
 ```
-（-n 0.0 表示没有噪声，行动结果是确定的）
+(-n 0.0 means there is no noise, so actions are deterministic.)
 
-改变生存奖励 (Living Reward):
+Change living reward:
 
 ```Bash
 
 python gridworld.py -a value -i 100 -r -0.1
 ```
-（-r -0.1 表示每走一步都有一个小的负奖励，鼓励智能体尽快到达终点）
+(-r -0.1 applies a small negative reward for each step, encouraging the agent to reach the terminal state faster.)
 
-2. Q学习 (Q-Learning)
-Q学习算法在 qlearningAgents.py 中实现。我们主要在 Pacman 环境下测试该算法。
+2. Q-Learning
+The Q-Learning algorithm is implemented in qlearningAgents.py. This algorithm is primarily tested in the Pacman environment.
 
-训练Pacman Q-Learning智能体
-在 smallGrid 地图上训练 PacmanQAgent 2000轮游戏，并观看最后10轮的表现。
+Training the Pacman Q-Learning Agent
+Train the PacmanQAgent on the smallGrid layout for 2000 games and watch the performance of the final 10 games.
 
 ```Bash
 
 python pacman.py -p PacmanQAgent -x 2000 -n 2010 -l smallGrid
 ```
--p PacmanQAgent: 指定使用Q学习吃豆人智能体。
+-p PacmanQAgent: Specifies the Q-Learning Pacman agent.
 
--x 2000: 设置训练轮次 (number of training episodes)。
+-x 2000: Sets the number of training episodes.
 
--n 2010: 设置总共运行的游戏轮次。训练将在前2000轮进行，最后10轮将关闭学习（探索率epsilon为0），只展示学习到的策略。
+-n 2010: Sets the total number of games to run. Training occurs during the first 2000 episodes, and for the final 10, learning is turned off (epsilon = 0) to display the learned policy.
 
--l smallGrid: 指定使用的地图布局。
+-l smallGrid: Specifies the map layout to use.
 
-训练近似Q学习智能体 (Approximate Q-Learning)
-对于更复杂的地图（如 mediumGrid），状态空间太大，无法使用传统的Q表。此时需要使用近似Q学习，通过特征来估计Q值。
+Training the Approximate Q-Learning Agent
+For more complex layouts like mediumClassic, the state space is too large for a traditional Q-table. In this case, Approximate Q-Learning is required, which estimates Q-values using features.
 
 ```Bash
 
 python pacman.py -p ApproximateQAgent -a extractor=SimpleExtractor -x 50 -n 60 -l mediumClassic
 ```
--p ApproximateQAgent: 指定使用近似Q学习智能体。
+-p ApproximateQAgent: Specifies the Approximate Q-Learning agent.
 
--a extractor=SimpleExtractor: 指定用于提取状态特征的函数。SimpleExtractor 是一个预先提供的基本特征提取器。
+-a extractor=SimpleExtractor: Specifies the function used to extract features from states. SimpleExtractor is a basic feature extractor provided in the project.
 
-3. Crawler 机器人
-你也可以在 crawler.py 上测试你的Q学习算法，训练一个两足机器人学习如何行走。
+3. Crawler Robot
+You can also test your Q-Learning algorithm on the crawler.py environment to train a two-legged robot to walk.
 
 ```Bash
 
 python crawler.py
 ```
-这个脚本会打开一个图形界面，并自动开始训练过程。你可以实时观察到机器人学习行走的过程以及奖励的变化。
+This script will open a graphical interface and automatically begin the training process. You can observe the robot learning to walk and the reward progression in real-time.
+
+Running the Autograder
+The project includes an autograder to check the correctness of your implementation.
+
+Run All Tests
+To run the complete test suite, execute the following command:
+
+```Bash
+
+python autograder.py
+```
+Run Tests for a Specific Question
+If you only want to test a single question (e.g., q1), you can use the -q flag:
+
+```Bash
+
+python autograder.py -q q1
+```
+View Graphical Tests
+Some test cases support graphical display to help with debugging.
+
+```Bash
+
+python autograder.py --graphics -q q4
+```
+This will run the test for question 4 with visualization.
